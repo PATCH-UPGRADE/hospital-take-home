@@ -1,0 +1,64 @@
+import type { SearchParams } from "nuqs/server";
+import React, { Suspense } from "react";
+import { ErrorBoundary } from "react-error-boundary";
+import { HydrateClient } from "@/trpc/server";
+import type { SearchParamsPageProps } from "./page-types";
+
+/**
+ * Configuration for creating a standard paginated list page
+ */
+export type ListPageConfig<TParams> = {
+  /** Function to load and parse URL parameters */
+  paramsLoader: (searchParams: Promise<SearchParams>) => Promise<TParams>;
+  /** Function to prefetch data on the server */
+  prefetch: (params: TParams) => Promise<void> | void;
+  /** Container component that wraps the page */
+  Container?: React.ComponentType<{ children: React.ReactNode }>;
+  /** List component that displays the data */
+  List: React.ComponentType;
+  /** Loading fallback component */
+  Loading: React.ComponentType;
+  /** Error fallback component */
+  Error: React.ComponentType;
+};
+
+/**
+ * Factory function that creates a standard paginated list page
+ * following the pattern: params → prefetch → hydrate → error boundary → suspense
+ *
+ * @example
+ * ```typescript
+ * export default createListPage({
+ *   paramsLoader: assetsParamsLoader,
+ *   prefetch: prefetchAssets,
+ *   Container: AssetsContainer,
+ *   List: AssetsList,
+ *   Loading: AssetsLoading,
+ *   Error: AssetsError,
+ * });
+ * ```
+ */
+export function createListPage<TParams>(
+  config: ListPageConfig<TParams>,
+): React.FC<SearchParamsPageProps> {
+  const Page = async ({ searchParams }: SearchParamsPageProps) => {
+    const params = await config.paramsLoader(searchParams);
+    await config.prefetch(params);
+
+    const Container = config.Container || React.Fragment;
+
+    return (
+      <Container>
+        <HydrateClient>
+          <ErrorBoundary fallback={<config.Error />}>
+            <Suspense fallback={<config.Loading />}>
+              <config.List />
+            </Suspense>
+          </ErrorBoundary>
+        </HydrateClient>
+      </Container>
+    );
+  };
+
+  return Page;
+}

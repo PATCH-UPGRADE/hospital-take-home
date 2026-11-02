@@ -1,0 +1,41 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// A concrete networked device on the hospital network (a real box with an IP).
+// Feel free to make any changes you'd like to this model, or add
+// additional models
+model Asset {
+  id         String  @id @default(cuid())
+  ip         String
+  deviceType String?
+
+  manufacturer  String
+  product       String
+  // Set only when versionStatus is KNOWN (enforced by a check constraint in the migration).
+  version       String?
+  versionStatus VersionStatus @default(UNKNOWN)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([createdAt])
+  @@index([updatedAt])
+  @@map("asset")
+}
+
+// Why an asset does or doesn't have a version.
+enum VersionStatus {
+  KNOWN // `version` holds the version running on the device
+  UNKNOWN // the device has a version, but nobody knows what it is
+  NOT_APPLICABLE // the product has no versions
+}
