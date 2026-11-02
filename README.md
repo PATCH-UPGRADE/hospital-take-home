@@ -1,13 +1,8 @@
 # Bugcrowd / PATCH Take-Home Assessment
 
-The application provides a minimal interface to view an asset inventory for hospitals.
+The application provides a minimal interface for a hospital to view an inventory of their medical devices.
 
-- The **asset dashboard** (`/`) lists assets in a searchable, sortable, paginated table, and has a
-  **New Asset** dialog for creating one. It sits in an app shell with a collapsible sidebar and a
-  top bar with a light/dark theme toggle.
-- The **REST API** (`/api/v1`) lists and creates assets. Its interactive docs are at
-  [`/docs`](http://localhost:3000/docs), linked from the bottom of the sidebar. The API has no
-  authentication.
+<img width="2936" height="1966" alt="Table of medical devices in a hospital" src="https://github.com/user-attachments/assets/fc3568bc-3d14-4851-8ca9-78f67af6b090" />
 
 
 ## Screenshots / Screen-recording
@@ -23,9 +18,7 @@ TODO for candidate
 ## Stack
 
 - [Next.js 15](https://nextjs.org) (App Router), React 19, TypeScript (strict)
-- [tRPC 11](https://trpc.io) with [TanStack Query](https://tanstack.com/query)
-- [trpc-to-openapi](https://github.com/mcampa/trpc-to-openapi) exposes tRPC procedures as REST
-  endpoints, with [Scalar](https://scalar.com) rendering the OpenAPI document
+- [tRPC 11](https://trpc.io) for type-safe API's, with [TanStack Query](https://tanstack.com/query)
 - [Prisma 6](https://www.prisma.io) ORM with PostgreSQL
 - [shadcn/ui](https://ui.shadcn.com) component library + Tailwind CSS 4
 - [nuqs](https://nuqs.47ng.com) for URL state (page, search, sort)
@@ -42,14 +35,10 @@ npm install            # also generates the Prisma client
 npm run db:up          # starts Postgres on localhost:5432
 npm run db:migrate     # applies the migrations
 npm run db:seed        # loads sample assets (skipped if assets already exist)
-npm run dev
+npm run dev:all        # Runs Next.js, Inngest dev server, and Prisma studio
 ```
 
 Then open http://localhost:3000.
-
-Instead of `npm run dev`, `npm run dev:all` runs the Next.js dev server, the Inngest dev server
-and Prisma Studio side by side in [mprocs](https://github.com/pvolok/mprocs) (configured in
-`mprocs.yaml`). Postgres still has to be started with `npm run db:up`.
 
 ## Background jobs (optional)
 
